@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sign Up — GameFart</title><link rel="stylesheet" href="style.css"></head>
+<body><header class="topbar"><a class="logo" href="index.html">💨 GameFart</a><nav><a href="index.html#games">Games</a><a href="create.html">Create</a><a href="index.html#scores">World Records</a></nav></header>
+<main><section class="creator-page"><p class="eyebrow">ACCOUNT</p><h1>Sign up.</h1><p class="hero-copy">Make an account to create and publish games. Your browser saves are still yours. Humanity survives another signup form.</p>
+<div class="auth-card"><div class="auth-form"><input id="email" type="email" placeholder="you@example.com" autocomplete="email"><input id="password" type="password" placeholder="Password" autocomplete="new-password"><button class="button" id="signup">Create account →</button><button class="button secondary" id="signin">Sign in</button></div><p id="msg" class="muted"></p></div></section></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth.js"></script><script>
+const email=document.querySelector('#email'),password=document.querySelector('#password'),msg=document.querySelector('#msg');
+document.querySelector('#signup').onclick=async()=>{if(!email.value||!password.value)return msg.textContent='Enter an email and password first.';msg.textContent='Creating account...';const {data,error}=await GameFartAuth.signUp(email.value,password.value);msg.textContent=error?error.message:(data.session?'Account created.':'Check your email to verify your account, then come back and sign in.');};
+document.querySelector('#signin').onclick=async()=>{if(!email.value||!password.value)return msg.textContent='Enter an email and password first.';msg.textContent='Signing in...';const {data,error}=await GameFartAuth.signIn(email.value,password.value);if(error)msg.textContent=error.message;else location.href='index.html';};
+</script></body></html>
