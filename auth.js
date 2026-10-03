@@ -14,8 +14,25 @@
   async function signOut(){return client.auth.signOut()}
   function isModerator(user){return user?.app_metadata?.role==='moderator'}
   function isOwner(user){return user?.app_metadata?.role==='owner'}
-  async function manageModerators(action,userId){const {data,error}=await client.functions.invoke('manage-moderators',{body:{action,userId}});if(error)throw error;return data}
+  async function manageModerators(action,email){const {data,error}=await client.functions.invoke('manage-moderators',{body:{action,email}});if(error)throw error;return data}
   async function listModerators(){return manageModerators('list','')}
-  async function requireCreator(){const user=await ensureGuest();if(user.is_anonymous)return {ok:false,user};return {ok:true,user}}
+  async function renderAuthActions(){
+  const box=document.querySelector('.auth-actions'); if(!box)return;
+  const user=await getUser();
+  box.replaceChildren();
+  if(!user){
+    const guest=document.createElement('button'); guest.id='guest'; guest.textContent='Continue as Guest'; box.append(guest);
+    const signup=document.createElement('a'); signup.href='auth.html'; signup.textContent='Sign Up'; box.append(signup); return;
+  }
+  if(user.is_anonymous){
+    const guest=document.createElement('button'); guest.id='guest'; guest.textContent='Guest Mode'; box.append(guest);
+    const signup=document.createElement('a'); signup.href='auth.html'; signup.textContent='Sign Up'; box.append(signup); return;
+  }
+  const label=document.createElement('span'); label.className='account-label'; label.textContent=user.email||'Signed in'; box.append(label);
+  if(isOwner(user)){const owner=document.createElement('a');owner.href='owner.html';owner.textContent='Owner Dashboard';box.append(owner)}
+  else if(isModerator(user)){const mod=document.createElement('a');mod.href='moderator.html';mod.textContent='Moderator';box.append(mod)}
+  const logout=document.createElement('button'); logout.id='logout'; logout.textContent='Log Out'; logout.onclick=async()=>{await signOut();location.reload()}; box.append(logout);
+}
+async function requireCreator(){const user=await ensureGuest();if(user.is_anonymous)return {ok:false,user};return {ok:true,user}}
   window.GameFartAuth={client,publicClient,getSession,getUser,ensureGuest,continueAsGuest,linkGuestEmail,signUp,signIn,sendMagicLink,signOut,isModerator,isOwner,manageModerators,listModerators,requireCreator};
 })();
