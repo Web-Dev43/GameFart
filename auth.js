@@ -7,7 +7,7 @@
   async function getUser(){const {data}=await client.auth.getUser();return data.user||null}
   async function ensureGuest(){const session=await getSession();if(session?.user)return session.user;const {data,error}=await client.auth.signInAnonymously();if(error)throw error;return data.user}
   async function continueAsGuest(){return ensureGuest()}
-  async function linkGuestEmail(email){const user=await getUser();if(!user?.is_anonymous)return {user,error:null};const {data,error}=await client.auth.updateUser({email:email.trim().toLowerCase()});return {user:data.user||null,error}}
+  async function linkGuestEmail(email){const user=await refreshAuthState();if(!user?.is_anonymous)return {user,error:null};const {data,error}=await client.auth.updateUser({email:email.trim().toLowerCase()});return {user:data.user||null,error}}
   async function signUp(email,password){return client.auth.signUp({email:email.trim().toLowerCase(),password,options:{emailRedirectTo:location.origin+location.pathname}})}
   async function signIn(email,password){return client.auth.signInWithPassword({email:email.trim().toLowerCase(),password})}
   async function sendMagicLink(email){return client.auth.signInWithOtp({email:email.trim().toLowerCase(),options:{emailRedirectTo:location.origin+location.pathname}})}
@@ -16,7 +16,8 @@
   function isOwner(user){return user?.app_metadata?.role==='owner'}
   async function manageModerators(action,email){const {data,error}=await client.functions.invoke('manage-moderators',{body:{action,email}});if(error)throw error;return data}
   async function listModerators(){return manageModerators('list','')}
-  async function renderAuthActions(){
+  async function refreshAuthState(){try{await client.auth.refreshSession()}catch(e){}return getUser()}
+async function renderAuthActions(){
   const box=document.querySelector('.auth-actions'); if(!box)return;
   const user=await getUser();
   box.replaceChildren();
