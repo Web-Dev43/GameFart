@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>GameFart — Play Games. Make Games. Fart Games.</title>
-  <meta name="description" content="GameFart is a tiny game hub for playing and eventually making stupidly fun games.">
+  <meta name="description" content="GameFart is a game hub for playing and eventually making stupidly fun games.">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,7 +13,7 @@
     <nav>
       <a href="#games">Games</a>
       <a href="#create">Create</a>
-      <a href="#scores">High Scores</a>
+      <a href="#scores">World Records</a>
     </nav>
   </header>
 
@@ -34,25 +34,58 @@
 
     <section id="games" class="section">
       <div class="section-head">
-        <div><p class="eyebrow">LIBRARY</p><h2>Pick something</h2></div>
-        <span class="pill">2 games playable</span>
+        <div><p class="eyebrow">LIBRARY</p><h2>Top picks for you</h2></div>
+        <span class="pill">2 playable · more cooking</span>
       </div>
-      <div class="grid">
+
+      <a class="featured-game" href="games/tetris.html">
+        <div class="featured-thumb tetris-thumb"><span>🧱</span></div>
+        <div class="featured-body">
+          <div>
+            <p class="eyebrow">FEATURED GAME</p>
+            <h3>Tetris</h3>
+            <p>Stack blocks. Clear lines. Blame gravity.</p>
+          </div>
+          <div class="record-box">🌎 WORLD RECORD <b data-world-record="tetris">Loading...</b></div>
+          <span class="play-badge">PLAY →</span>
+        </div>
+      </a>
+
+      <div class="games-grid">
         <a class="game-card" href="games/snake.html">
           <div class="thumb snake-thumb">🐍</div>
-          <div class="card-body"><h3>Snake</h3><p>Eat stuff. Get long. Regret everything.</p><span>PLAY →</span></div>
+          <div class="card-body">
+            <h3>Snake</h3>
+            <p>Eat stuff. Get long. Go through the walls.</p>
+            <div class="card-meta"><span>PLAY →</span><small>🌎 <b data-world-record="snake">Loading...</b></small></div>
+          </div>
         </a>
-        <a class="game-card" href="games/tetris.html">
-          <div class="thumb tetris-thumb">🧱</div>
-          <div class="card-body"><h3>Tetris</h3><p>Make the blocks behave. They will not.</p><span>PLAY →</span></div>
-        </a>
+
         <div class="game-card locked">
-          <div class="thumb">🐦</div>
-          <div class="card-body"><h3>Flappy</h3><p>Bird goes up. Pipe says no.</p><span>SOON</span></div>
+          <div class="thumb flappy-thumb">🐦</div>
+          <div class="card-body">
+            <h3>Flappy</h3>
+            <p>Bird goes up. Pipe says no.</p>
+            <div class="card-meta"><span>SOON</span><small>🌎 No record</small></div>
+          </div>
         </div>
+
         <div class="game-card locked">
-          <div class="thumb">🎯</div>
-          <div class="card-body"><h3>Dodge</h3><p>Things fall. You panic.</p><span>SOON</span></div>
+          <div class="thumb dodge-thumb">🎯</div>
+          <div class="card-body">
+            <h3>Dodge</h3>
+            <p>Things fall. You panic.</p>
+            <div class="card-meta"><span>SOON</span><small>🌎 No record</small></div>
+          </div>
+        </div>
+
+        <div class="game-card locked">
+          <div class="thumb">🧨</div>
+          <div class="card-body">
+            <h3>Something Stupid</h3>
+            <p>We have no idea what this is yet.</p>
+            <div class="card-meta"><span>SOON</span><small>🌎 No record</small></div>
+          </div>
         </div>
       </div>
     </section>
@@ -67,12 +100,21 @@
     </section>
 
     <section id="scores" class="section scores">
-      <div class="section-head"><div><p class="eyebrow">LEADERBOARD</p><h2>High scores</h2></div></div>
-      <div class="score-row"><b>🐍 Snake</b><span>Coming with accounts + saved scores</span></div>
-      <div class="score-row"><b>🧱 Tetris</b><span>Coming with accounts + saved scores</span></div>
+      <div class="section-head">
+        <div><p class="eyebrow">GLOBAL LEADERBOARD</p><h2>World records</h2></div>
+      </div>
+      <div class="score-row"><b>🧱 Tetris</b><span data-world-record="tetris">Loading...</span></div>
+      <div class="score-row"><b>🐍 Snake</b><span data-world-record="snake">Loading...</span></div>
     </section>
   </main>
 
   <footer><b>💨 GameFart</b><span>Play Games. Make Games. Fart Games.</span></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="scores.js"></script>
+  <script>
+    GameFartScores.fillRecord('tetris', [...document.querySelectorAll('[data-world-record="tetris"]')]);
+    GameFartScores.fillRecord('snake', [...document.querySelectorAll('[data-world-record="snake"]')]);
+  </script>
 </body>
 </html>
