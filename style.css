@@ -10,7 +10,7 @@ button{cursor:pointer}
 .logo span{display:inline-block;transform:rotate(-8deg);margin-right:6px}
 .topbar nav{display:flex;gap:24px;color:var(--muted);font-weight:750}
 .topbar nav a:hover{color:var(--hot)}
-.auth-actions{display:flex;gap:8px;align-items:center}.auth-actions button,.auth-actions a{border:1px solid var(--line);background:var(--card);color:var(--text);padding:8px 11px;border-radius:9px;font-size:12px;font-weight:900}.auth-actions a{color:var(--hot)}
+.auth-actions{display:flex;gap:8px;align-items:center}.signup-link{display:inline-block!important}.auth-actions button,.auth-actions a{border:1px solid var(--line);background:var(--card);color:var(--text);padding:8px 11px;border-radius:9px;font-size:12px;font-weight:900}.auth-actions a{color:var(--hot)}
 main{max-width:1120px;margin:auto;padding:0 24px}
 .hero{min-height:590px;display:grid;grid-template-columns:1.15fr .85fr;align-items:center;gap:70px}
 .eyebrow{font-size:11px;letter-spacing:.16em;color:var(--hot);font-weight:900;margin:0 0 12px}
