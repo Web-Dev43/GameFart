@@ -18,7 +18,7 @@
   async function listModerators(){return manageModerators('list','')}
   async function refreshAuthState(){try{await client.auth.refreshSession()}catch(e){}return getUser()}
 async function renderAuthActions(){
-  const box=document.querySelector('.auth-actions'); if(!box)return;
+  const box=document.querySelector('.auth-actions'); if(!box)return; try {
   const user=await refreshAuthState();
   box.replaceChildren();
   if(!user){
@@ -33,7 +33,8 @@ async function renderAuthActions(){
   if(isOwner(user)){const owner=document.createElement('a');owner.href='owner.html';owner.textContent='Owner Dashboard';box.append(owner)}
   else if(isModerator(user)){const mod=document.createElement('a');mod.href='moderator.html';mod.textContent='Moderator';box.append(mod)}
   const logout=document.createElement('button'); logout.id='logout'; logout.textContent='Log Out'; logout.onclick=async()=>{await signOut();location.reload()}; box.append(logout);
-}
+  const state=document.querySelector('#account-state'); if(state) state.textContent='';
+} catch(e) { console.error(e); }
 async function requireCreator(){const user=await ensureGuest();if(user.is_anonymous)return {ok:false,user};return {ok:true,user}}
   window.GameFartAuth={client,publicClient,getSession,getUser,ensureGuest,continueAsGuest,linkGuestEmail,signUp,signIn,sendMagicLink,signOut,isModerator,isOwner,manageModerators,listModerators,requireCreator};
 })();
