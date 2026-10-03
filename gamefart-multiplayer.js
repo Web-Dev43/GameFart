@@ -10,6 +10,7 @@
   let gameId=null;
   let realPlayers=[];
   let messageHandlers=[];
+  let botTimer=null;
   let playerHandlers=[];
 
   function uniquePlayers(state){
@@ -43,7 +44,9 @@
     const count=document.querySelector('#player-count');
     if(count) count.textContent=realPlayers.length+' player'+(realPlayers.length===1?'':'s');
     const bot=document.querySelector('#bot-status');
-    if(bot) bot.textContent=bots.length ? '🤖 Bots are keeping the lobby alive' : '';
+    if(bot) bot.textContent=bots.length ? '🤖 Bot slots active' : '';
+    if(bots.length && !botTimer && frame?.contentWindow){botTimer=setInterval(()=>frame.contentWindow.postMessage({type:'GF_BOT_TICK',bots:bots},'*'),750)}
+    if(!bots.length && botTimer){clearInterval(botTimer);botTimer=null}
   }
 
   async function start(game,iframe){
@@ -106,6 +109,7 @@
 
   async function stop(){
     if(channel){await channel.untrack().catch(()=>{});await supabase.removeChannel(channel);channel=null}
+    if(botTimer){clearInterval(botTimer);botTimer=null}
     realPlayers=[];publishPlayers();
   }
 
