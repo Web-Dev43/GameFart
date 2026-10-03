@@ -37,5 +37,5 @@ async function renderAuthActions(){
   } catch(e) { console.error(e); }
 }
 async function requireCreator(){const user=await ensureGuest();if(user.is_anonymous)return {ok:false,user};return {ok:true,user}}
-  window.GameFartAuth={client,publicClient,getSession,getUser,ensureGuest,continueAsGuest,linkGuestEmail,signUp,signIn,sendMagicLink,signOut,isModerator,isOwner,manageModerators,listModerators,requireCreator};
+  window.GameFartAuth={client,publicClient,getSession,getUser,ensureGuest,continueAsGuest,linkGuestEmail,signUp,signIn,sendMagicLink,signOut,isModerator,isOwner,manageModerators,listModerators,renderAuthActions,requireCreator};
 })();
