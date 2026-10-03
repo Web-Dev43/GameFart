@@ -13,6 +13,9 @@
   async function sendMagicLink(email){return client.auth.signInWithOtp({email:email.trim().toLowerCase(),options:{emailRedirectTo:location.origin+location.pathname}})}
   async function signOut(){return client.auth.signOut()}
   function isModerator(user){return user?.app_metadata?.role==='moderator'}
+  function isOwner(user){return user?.app_metadata?.role==='owner'}
+  async function manageModerators(action,userId){const {data,error}=await client.functions.invoke('manage-moderators',{body:{action,userId}});if(error)throw error;return data}
+  async function listModerators(){return manageModerators('list','')}
   async function requireCreator(){const user=await ensureGuest();if(user.is_anonymous)return {ok:false,user};return {ok:true,user}}
-  window.GameFartAuth={client,publicClient,getSession,getUser,ensureGuest,continueAsGuest,linkGuestEmail,signUp,signIn,sendMagicLink,signOut,isModerator,requireCreator};
+  window.GameFartAuth={client,publicClient,getSession,getUser,ensureGuest,continueAsGuest,linkGuestEmail,signUp,signIn,sendMagicLink,signOut,isModerator,isOwner,manageModerators,listModerators,requireCreator};
 })();
