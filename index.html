@@ -1,9 +1,20 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GameFart — Play Games. Make Games. Fart Games.</title><meta name="description" content="GameFart is a game hub for playing and eventually making stupidly fun games."><link rel="stylesheet" href="style.css?v=4"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GameFart — Play Games. Make Games. Fart Games.</title><meta name="description" content="GameFart is a game hub for playing and eventually making stupidly fun games."><link rel="stylesheet" href="style.css?v=4"><style id="big-fart-overlay-style">
+#big-fart-overlay{position:fixed;inset:0;z-index:99999;background:rgba(8,8,10,.92);display:none;place-items:center;padding:20px;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+#big-fart-overlay.show{display:grid}
+.big-fart-box{width:min(760px,100%);background:#15151a;border:2px solid #ffb84d;border-radius:18px;padding:24px;box-shadow:0 20px 80px rgba(0,0,0,.55)}
+.big-fart-title{font-size:clamp(38px,10vw,72px);font-weight:1000;letter-spacing:-.07em;color:#ffb84d;margin:0 0 8px}
+.big-fart-message{color:#f4f1e8;font-size:17px;word-break:break-word}
+.big-fart-details{margin-top:16px;background:#0b0b0e;border:1px solid #2b2b33;border-radius:10px;padding:12px;color:#9a999f;white-space:pre-wrap;max-height:220px;overflow:auto;font:12px/1.5 ui-monospace,SFMono-Regular,monospace}
+.big-fart-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.big-fart-actions button{border:0;border-radius:10px;padding:11px 15px;font-weight:950;cursor:pointer;background:#ffb84d;color:#171006}
+.big-fart-actions button.secondary{background:#1c1c22;color:#f4f1e8;border:1px solid #2b2b33}
+</style></head>
 <body>
 <header class="topbar"><a class="logo" id="staff-secret" href="index.html"><span>💨</span> GameFart</a><nav><a href="#games">Games</a><a href="#create">Create</a><a href="#scores">World Records</a></nav><div class="auth-actions"><button id="guest">Continue as Guest</button><a class="signup-link" href="auth.html">Sign Up</a><a id="staff-link" href="moderator.html" hidden>Staff</a><span id="account-state" class="account-state"></span></div></header>
-<main>
+<div id="big-fart-overlay" role="alertdialog" aria-modal="true" aria-labelledby="big-fart-title">
+<div class="big-fart-box"><h1 id="big-fart-title" class="big-fart-title">💨 BIG FART</h1><div id="big-fart-message" class="big-fart-message">Something exploded.</div><details><summary>Technical details</summary><div id="big-fart-details" class="big-fart-details"></div></details><div class="big-fart-actions"><button onclick="location.reload()">Reload</button><button class="secondary" onclick="document.querySelector('#big-fart-overlay').classList.remove('show')">Dismiss</button></div></div></div><main>
 <section class="hero"><div><p class="eyebrow">THE INTERNET'S MOST QUESTIONABLE GAME HUB</p><h1>Play Games.<br><span>Make Games.</span><br>Fart Games.</h1><p class="hero-copy">Tiny games. Big nonsense. Guests can play and keep local saves. Creators have to sign up because suffering builds character.</p><div class="hero-actions"><a class="button" href="#games">Start Playing →</a><a class="button secondary" href="create.html">Make a Game</a></div><p id="auth-status" class="muted"></p></div><div class="fart-card" aria-hidden="true"><div class="cloud">💨</div><strong>GAME<br>FART</strong><small>100% scientifically unverified</small></div></section>
 <section id="games" class="section"><div class="section-head"><div><p class="eyebrow">LIBRARY</p><h2>Top picks for you</h2></div><span class="pill">2 playable · community games below</span></div>
 <a class="featured-game" href="games/tetris.html"><div class="featured-thumb tetris-thumb"><span>🧱</span></div><div class="featured-body"><div><p class="eyebrow">FEATURED GAME</p><h3>Tetris</h3><p>Stack blocks. Clear lines. Blame gravity.</p></div><div class="record-box">🌎 WORLD RECORD <b data-world-record="tetris">Loading...</b></div><span class="play-badge">PLAY →</span></div></a>
@@ -18,4 +29,16 @@ GameFartScores.fillRecord("tetris",[...document.querySelectorAll('[data-world-re
 document.addEventListener("click",async e=>{if(e.target.id!=="guest")return;const s=document.querySelector("#auth-status");try{const u=await GameFartAuth.continueAsGuest();s.textContent=u.is_anonymous?"Guest mode on. Your guest session can save here.":"You're signed in."}catch(e){s.textContent=e.message}});;
 let taps=0,timer;document.querySelector("#staff-secret").addEventListener("click",e=>{taps++;clearTimeout(timer);timer=setTimeout(()=>taps=0,1800);if(taps>=5){e.preventDefault();document.querySelector("#staff-link").hidden=false}});
 async function loadCommunity(){const box=document.querySelector("#community-games");const {data,error}=await GameFartAuth.publicClient.from("gamefart_games").select("id,title,description").eq("status","published").order("created_at",{ascending:false}).limit(12);if(error){box.innerHTML="<div class='auth-card'><p>Community games are taking a nap.</p></div>";return}if(!data?.length){box.innerHTML="<div class='auth-card'><h3>No community games yet</h3><p>Someone has to be brave enough to submit one.</p></div>";return}box.replaceChildren(...data.map(g=>{const a=document.createElement("a");a.className="game-card";a.href="play.html?id="+encodeURIComponent(g.id);a.innerHTML="<div class='thumb'>🎮</div><div class='card-body'><h3></h3><p></p><div class='card-meta'><span>PLAY →</span><small>MODERATED</small></div></div>";a.querySelector("h3").textContent=g.title;a.querySelector("p").textContent=g.description||"A community-made GameFart.";return a}))}loadCommunity();
+</script><script>
+(function(){
+  const overlay=document.getElementById('big-fart-overlay'),msg=document.getElementById('big-fart-message'),details=document.getElementById('big-fart-details');
+  window.showBigFart=function(error,context){
+    const e=error instanceof Error?error:new Error(String(error||'Unknown failure'));
+    msg.textContent=context?context+': '+e.message:e.message;
+    details.textContent=[e.name+': '+e.message,e.stack||'No stack trace available.'].join('\n\n');
+    overlay.classList.add('show');
+  };
+  window.addEventListener('error',e=>showBigFart(e.error||e.message,'JavaScript error'));
+  window.addEventListener('unhandledrejection',e=>showBigFart(e.reason,'Unhandled promise rejection'));
+})();
 </script></body></html>
