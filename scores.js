@@ -5,48 +5,47 @@
   );
 
   async function getRecord(game) {
-    const { data, error } = await client
-      .from('game_scores')
+    const { data, error } = await client.from('game_scores')
       .select('score,player_name,created_at')
       .eq('game_slug', game)
       .order('score', { ascending: false })
       .order('created_at', { ascending: true })
-      .limit(1)
-      .maybeSingle();
+      .limit(1).maybeSingle();
     if (error) throw error;
     return data || null;
   }
 
-  async function submitIfRecord(game, score) {
-    if (!Number.isFinite(score) || score <= 0) return null;
-    let record = null;
-    try { record = await getRecord(game); } catch (e) { console.warn('World record lookup failed', e); return null; }
-    if (record && score <= record.score) return record;
+  async function startRun(game) {
+    const { data, error } = await client.functions.invoke('verify-game-score', {
+      body: { action: 'start', game }
+    });
+    if (error) throw error;
+    return data;
+  }
 
+  async function submitRun(game, sessionId, score, events) {
+    if (!sessionId || !Number.isFinite(score)) return null;
     let name = localStorage.getItem('gf-player-name') || '';
     if (!name) {
       name = window.prompt('NEW WORLD RECORD! Enter your name:', 'Anonymous') || 'Anonymous';
       name = name.trim().slice(0, 20) || 'Anonymous';
       localStorage.setItem('gf-player-name', name);
     }
-
-    const { error } = await client.from('game_scores').insert({
-      game_slug: game,
-      player_name: name,
-      score: Math.floor(score)
+    const { data, error } = await client.functions.invoke('verify-game-score', {
+      body: { action: 'submit', game, sessionId, score: Math.floor(score), playerName: name, events }
     });
     if (error) {
-      console.warn('World record save failed', error);
+      console.warn('Score verification failed', error);
       return null;
     }
-    return { score: Math.floor(score), player_name: name };
+    return data;
   }
 
   async function fillRecord(game, elements) {
     try {
       const record = await getRecord(game);
-      const text = record ? record.score + ' · ' + record.player_name : 'No record yet';
-      elements.forEach(el => { el.textContent = text; });
+      const value = record ? record.score + ' · ' + record.player_name : 'No record yet';
+      elements.forEach(el => { el.textContent = value; });
       return record;
     } catch (e) {
       console.warn('World record lookup failed', e);
@@ -55,5 +54,5 @@
     }
   }
 
-  window.GameFartScores = { getRecord, submitIfRecord, fillRecord };
+  window.GameFartScores = { getRecord, startRun, submitRun, fillRecord };
 })();
