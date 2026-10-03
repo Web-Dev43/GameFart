@@ -19,7 +19,7 @@
   async function refreshAuthState(){try{await client.auth.refreshSession()}catch(e){}return getUser()}
 async function renderAuthActions(){
   const box=document.querySelector('.auth-actions'); if(!box)return;
-  const user=await getUser();
+  const user=await refreshAuthState();
   box.replaceChildren();
   if(!user){
     const guest=document.createElement('button'); guest.id='guest'; guest.textContent='Continue as Guest'; box.append(guest);
