@@ -1,0 +1,23 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Moderator Application — GameFart</title><link rel="stylesheet" href="style.css?v=4"></head><body><script src="big-fart.js"></script><header class="topbar"><a class="logo" href="index.html">💨 GameFart</a><nav><a href="index.html#games">Games</a><a href="create.html">Create</a><a href="index.html#scores">World Records</a></nav></header><main><section class="creator-page"><p class="eyebrow">MODERATOR APPLICATION</p><h1>Wanna help keep GameFart sane?</h1><p class="hero-copy">Stupid games are welcome. Malicious nonsense is not. Apply here and the owner can review you without digging through the game queue.</p><div id="auth-state" class="auth-card">Checking your account...</div><form id="application" class="auth-card editor" hidden><label>Display name<input id="name" maxlength="60" required placeholder="What should we call you?"></label><label>Moderation experience<textarea id="experience" maxlength="1000" required placeholder="Have you moderated communities, games, Discord servers, etc.?"></textarea></label><label>Why should GameFart trust you?<textarea id="reason" maxlength="1500" required placeholder="Tell the owner why you would be a good moderator."></textarea></label><button class="button" type="submit">Submit application</button><p id="result" class="muted"></p></form><div class="auth-card"><p class="eyebrow">WHAT MODERATORS DO</p><p>Review submitted games, reject unsafe or malicious stuff, and leave the weird-but-safe games alone. <b>Stupid is allowed. Malicious isn't.</b></p><p class="muted">Applications are tied to your GameFart account so the owner knows who is applying.</p></div></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth.js?v=6"></script><script>
+const state=document.querySelector("#auth-state"),form=document.querySelector("#application"),result=document.querySelector("#result");
+async function load(){
+  try{
+    const user=await GameFartAuth.getUser();
+    if(!user){state.innerHTML="<h2>Sign in first</h2><p>You need a GameFart account before applying.</p><a class='button' href='auth.html'>Sign in / Sign up →</a>";return}
+    if(user.is_anonymous){state.innerHTML="<h2>Guest mode isn't enough</h2><p>Moderator applications require a permanent account.</p><a class='button' href='auth.html'>Create your account →</a>";return}
+    if(GameFartAuth.isOwner(user)||GameFartAuth.isModerator(user)){state.innerHTML="<h2>You already have staff access.</h2><p>No application needed. Go cause administrative problems responsibly.</p><a class='button' href='"+(GameFartAuth.isOwner(user)?"owner.html":"moderator.html")+"'>Open staff panel →</a>";return}
+    state.innerHTML="<h2>Applying as "+String(user.email||"signed-in user")+"</h2><p>Your application stays attached to this account.</p>";
+    const {data,error}=await GameFartAuth.client.from("gamefart_moderator_applications").select("status,reviewer_note,created_at").eq("applicant_id",user.id).order("created_at",{ascending:false}).limit(1).maybeSingle();
+    if(error)throw error;
+    if(data?.status==="pending"){form.hidden=true;result.textContent="You already have a pending application.";return}
+    if(data?.status==="rejected")result.textContent="Your previous application was rejected. You can submit a new one.";
+    form.hidden=false;
+  }catch(e){window.showBigFart?.(e,"Loading moderator application")}
+}
+form.onsubmit=async e=>{
+  e.preventDefault();result.textContent="Submitting...";const user=await GameFartAuth.getUser();if(!user||user.is_anonymous){result.textContent="You need a permanent account.";return}
+  const {error}=await GameFartAuth.client.from("gamefart_moderator_applications").insert({applicant_id:user.id,applicant_email:user.email,display_name:document.querySelector("#name").value.trim(),experience:document.querySelector("#experience").value.trim(),reason:document.querySelector("#reason").value.trim()});
+  if(error){result.textContent=error.message;return}form.hidden=true;state.innerHTML="<h2>Application sent. 💨</h2><p>The owner can now review it from the dedicated Moderator Applications section.</p>";result.textContent="";
+};
+load();
+</script></body></html>
