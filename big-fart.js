@@ -22,7 +22,7 @@
     overlay.querySelector("#big-fart-dismiss").onclick=()=>overlay.classList.remove("show");
   }
   function catchErrors(){
-    window.addEventListener("error",e=>window.showBigFart&&window.showBigFart(e.error||e.message,"JavaScript error"));
+    window.addEventListener("error",e=>{if(e.message==="Script error."&&!e.error&&!e.filename)return;window.showBigFart&&window.showBigFart(e.error||e.message,"JavaScript error")});
     window.addEventListener("unhandledrejection",e=>window.showBigFart&&window.showBigFart(e.reason,"Unhandled promise rejection"));
   }
   if(document.body) install(); else document.addEventListener("DOMContentLoaded",install,{once:true});
